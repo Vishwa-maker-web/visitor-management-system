@@ -18,5 +18,4 @@ public class VisitorTracking {
     private String currentZone;
     private String status;
     private LocalDateTime lastUpdated;
-
 }

@@ -6,19 +6,21 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.FileSystems;
+
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 public class QrService {
-    public String generatQr(String data){
+    public String generateQr(String data , String email){
         try {
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
             BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE,300,300);
-            String filePath = "C:/qr/visitor.png";
-            Path path = FileSystems.getDefault().getPath(filePath);
-            MatrixToImageWriter.writeToPath(bitMatrix,"PNG",path);
-            return filePath;
+            String safeEmail = email.replace("@", "").replace(".", "");
+            String filePath = "C:/qr/" + safeEmail + ".png";
+            Path path = Paths.get(filePath);
+            MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
+            return "http://localhost:4040/qr/"+safeEmail+".png" ;
         } catch (Exception e) {
             e.printStackTrace();
             return "QR Generation Failed";

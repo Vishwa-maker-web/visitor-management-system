@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface MeetingRoomRepository extends JpaRepository<MeetingRoom,Long> {
     Optional<MeetingRoom> findByRoomName(String roomName);
     List<MeetingRoom> findByStatus(String status);
-
+    long countByStatus(String status);
 }

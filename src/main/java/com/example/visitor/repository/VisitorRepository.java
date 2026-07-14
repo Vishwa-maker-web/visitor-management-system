@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface VisitorRepository extends JpaRepository<Visitor,Long> {
     Optional<Visitor> findByEmailOrPhone(String email, String phone);
     Optional<Visitor> findByEmail(String email);
+    long countByPurpose(String purpose);
 }

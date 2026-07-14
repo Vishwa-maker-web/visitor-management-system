@@ -11,12 +11,15 @@ import java.util.List;
 public class MeetingRoomService {
 
 
-        @Autowired
-        private MeetingRoomRepository meetingRoomRepository;
+    @Autowired
+    private MeetingRoomRepository meetingRoomRepository;
 
-        public List<MeetingRoom> getRooms() {
-            return meetingRoomRepository.findAll();
-        }
+    @Autowired
+    AuditLogService auditLogService;
+
+    public List<MeetingRoom> getRooms() {
+        return meetingRoomRepository.findAll();
+    }
 
     public String occupyRoom(String roomName) {
         MeetingRoom room = meetingRoomRepository.findByRoomName(roomName)
@@ -37,7 +40,7 @@ public class MeetingRoomService {
 
         return "Room Released";
     }
-   public String assignRoom() {
+    public String assignRoom() {
 
         List<MeetingRoom> rooms = meetingRoomRepository.findByStatus("AVAILABLE");
 
@@ -49,6 +52,8 @@ public class MeetingRoomService {
 
         room.setStatus("OCCUPIED");
         meetingRoomRepository.save(room);
+
+
 
         return "Assigned Room : " + room.getRoomName();
     }

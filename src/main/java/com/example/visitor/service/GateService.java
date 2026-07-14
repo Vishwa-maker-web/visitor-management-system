@@ -20,8 +20,11 @@ private VisitorRepository visitorRepository;
 private GateEntryRepository gateEntryRepository;
     @Autowired
 private ReceptionQueueRepository receptionQueueRepository;
+    @Autowired
+    AuditLogService auditLogService;
 
     public String scanQr(String email, String idNumber){
+
         Optional<Visitor> visitor = visitorRepository.findByEmail(email);
         if (visitor.isEmpty()){
             return "visitor not found";
@@ -43,6 +46,8 @@ private ReceptionQueueRepository receptionQueueRepository;
         queue.setPurpose(v.getPurpose());
         queue.setStatus("waiting");
         receptionQueueRepository.save(queue);
+        auditLogService.saveLog(email,"gate allowed","system");
+
         return "gate entry allowed";
     }
 }

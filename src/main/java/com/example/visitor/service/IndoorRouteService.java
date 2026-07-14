@@ -7,6 +7,8 @@ import com.example.visitor.repository.MeetingAssignmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class IndoorRouteService {
 
@@ -14,18 +16,25 @@ public class IndoorRouteService {
     private MeetingAssignmentRepository meetingAssignmentRepository;
 
     @Autowired
+    private AuditLogService auditLogService;
+
+
+    @Autowired
     private IndoorRouteRepository indoorRouteRepository;
 
     public String getRoute(String email) {
-        MeetingAssignment meeting =
-                meetingAssignmentRepository.findByEmail(email).orElseThrow();
 
-        System.out.println("Meeting room = " + meeting.getRoom());
+        MeetingAssignment meeting =
+                meetingAssignmentRepository.findFirstByEmail(email)
+                        .orElseThrow(() -> new RuntimeException("Meeting not found"));
 
         IndoorRoute route =
-                indoorRouteRepository.findByRoom(meeting.getRoom()).orElseThrow();
+                indoorRouteRepository.findFirstByRoom(meeting.getRoom())
+                        .orElseThrow(() -> new RuntimeException("Route not found"));
 
-        System.out.println("Route = " + route.getRoute());
+        auditLogService.saveLog(email,"navigation started","visitor");
         return route.getRoute();
     }
+
+
 }

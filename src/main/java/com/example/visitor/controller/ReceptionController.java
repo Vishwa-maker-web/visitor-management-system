@@ -9,23 +9,29 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/reception")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ReceptionController {
-    @Autowired
-    public ReceptionService receptionService;
 
-    @GetMapping("queue")
-    public List<ReceptionQueue> getQueue(){
+    @Autowired
+    private ReceptionService receptionService;
+
+    @GetMapping("/queue")
+    public List<ReceptionQueue> getQueue() {
         return receptionService.getWaitingVisitors();
     }
 
-
-    @PostMapping("/approve")
-    public String approve(@RequestParam String email){
-        return receptionService.approveVisitor(email);
+    @PostMapping("/verify")
+    public String verifyVisitor(@RequestParam String email) {
+        return receptionService.verifyAndNotifyHost(email);
     }
+
+    @PostMapping("/host-confirm")
+    public String hostConfirm(@RequestParam String email) {
+        return receptionService.hostConfirm(email);
+    }
+
     @PostMapping("/assign-room")
     public String assignRoom(@RequestParam String email) {
         return receptionService.assignRoom(email);
     }
-
 }

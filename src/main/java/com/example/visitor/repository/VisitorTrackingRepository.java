@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface VisitorTrackingRepository extends JpaRepository<VisitorTracking,Long> {
 Optional<VisitorTracking> findByEmail(String email);
+long countByStatus(String status);
+long count();
 }

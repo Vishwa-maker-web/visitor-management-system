@@ -4,7 +4,7 @@ import com.example.visitor.entity.UserRole;
 import com.example.visitor.service.UserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/auth")
 public class UserRoleController {
