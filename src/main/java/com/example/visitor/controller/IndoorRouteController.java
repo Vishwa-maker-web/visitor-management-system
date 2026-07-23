@@ -3,7 +3,7 @@ package com.example.visitor.controller;
 import com.example.visitor.service.IndoorRouteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://13.206.110.245")
 @RestController
 @RequestMapping("/route")
 public class IndoorRouteController {

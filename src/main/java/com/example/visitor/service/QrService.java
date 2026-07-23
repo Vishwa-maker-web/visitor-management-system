@@ -17,10 +17,10 @@ public class QrService {
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
             BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE,300,300);
             String safeEmail = email.replace("@", "").replace(".", "");
-            String filePath = "C:/qr/" + safeEmail + ".png";
+            String filePath = "/app/qr/" + safeEmail + ".png";
             Path path = Paths.get(filePath);
             MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
-            return "http://localhost:4040/qr/"+safeEmail+".png" ;
+            return "http://13.206.110.245:4040/qr/"+safeEmail+".png" ;
         } catch (Exception e) {
             e.printStackTrace();
             return "QR Generation Failed";

@@ -4,7 +4,7 @@ import com.example.visitor.service.GateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://13.206.110.245")
 @RestController
 @RequestMapping("/gate")
 public class GateController {

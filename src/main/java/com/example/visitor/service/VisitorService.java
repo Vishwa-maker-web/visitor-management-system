@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import com.example.visitor.entity.ReceptionQueue;
+import com.example.visitor.repository.ReceptionQueueRepository;
+
+ 
 
 @Service
 public class VisitorService {
@@ -27,7 +31,10 @@ public class VisitorService {
     private QrService qrService;
     @Autowired
     private SmsService smsService;
-    public final Map<String , Visitor> pendingVisitors = new ConcurrentHashMap<>();
+    @Autowired
+    private ReceptionQueueRepository receptionQueueRepository; 
+   
+   public final Map<String , Visitor> pendingVisitors = new ConcurrentHashMap<>();
 
     public String register(Visitor visitor) {
 
@@ -84,7 +91,14 @@ public class VisitorService {
 
 
             visitorRepository.save(visitor);
+            ReceptionQueue queue = new ReceptionQueue();
 
+     queue.setEmail(visitor.getEmail());
+    queue.setName(visitor.getName());
+    queue.setPurpose(visitor.getPurpose());
+    queue.setStatus("WAITING");
+
+receptionQueueRepository.save(queue);
             pendingVisitors.remove(email);
 
             String qrData = "EMAIL=" + visitor.getEmail() + "|ID=" + visitor.getIdNumber();
