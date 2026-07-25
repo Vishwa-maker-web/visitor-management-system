@@ -1,5 +1,5 @@
 package com.example.visitor.controller;
-
+import com.example.visitor.dto.LoginRequest;
 import com.example.visitor.dto.ReportDTO;
 import com.example.visitor.dto.VerifyOtpRequest;
 import com.example.visitor.entity.Visitor;
@@ -7,7 +7,6 @@ import com.example.visitor.service.VisitorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @CrossOrigin(origins = "http://13.206.110.245")
@@ -46,5 +45,18 @@ public class VisitorController {
     public ReportDTO getReport() {
         return visitorService.getReport();
     }
+
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequest request) {
+    return visitorService.login(request.getEmail());
+    }
+
+     @PostMapping("/verify-login-otp")
+   public String verifyLoginOtp(@RequestBody VerifyOtpRequest request) {
+    return visitorService.verifyLoginOtp(
+           request.getEmail(),
+           request.getOtp()
+    );
+}
 
 }

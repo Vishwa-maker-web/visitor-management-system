@@ -71,11 +71,18 @@ public class VisitorService {
 
     public String verifyOtp(String email, String otp) {
 
-        Visitor visitor = pendingVisitors.get(email);
+     Visitor visitor = pendingVisitors.get(email);
 
-        if (visitor == null) {
-            return "Pending visitor not found";
-        }
+     if (visitor == null) {
+
+     Optional<Visitor> optionalVisitor = visitorRepository.findByEmail(email);
+
+     if (optionalVisitor.isEmpty()) { 
+        return "Visitor not found";
+    }
+
+    visitor = optionalVisitor.get();
+    }
 
         boolean verified =
                 smsService.verifyOtp(
@@ -91,14 +98,17 @@ public class VisitorService {
 
 
             visitorRepository.save(visitor);
-            ReceptionQueue queue = new ReceptionQueue();
-
+           
+           
+        ReceptionQueue queue = new ReceptionQueue();
+      
      queue.setEmail(visitor.getEmail());
     queue.setName(visitor.getName());
     queue.setPurpose(visitor.getPurpose());
     queue.setStatus("WAITING");
 
 receptionQueueRepository.save(queue);
+
             pendingVisitors.remove(email);
 
             String qrData = "EMAIL=" + visitor.getEmail() + "|ID=" + visitor.getIdNumber();
@@ -131,4 +141,44 @@ receptionQueueRepository.save(queue);
                 restricted
         );
     }
+
+    public String login(String email) {
+
+    Optional<Visitor> optionalVisitor = visitorRepository.findByEmail(email);
+
+    if (optionalVisitor.isEmpty()) {
+        return "Visitor not found";
+    }
+
+    Visitor visitor = optionalVisitor.get();
+
+    smsService.sendOtp(visitor.getPhone());
+
+    return "OTP sent successfully";
+}
+
+public String verifyLoginOtp(String email, String otp) {
+
+    Optional<Visitor> optionalVisitor = visitorRepository.findByEmail(email);
+
+    if (optionalVisitor.isEmpty()) {
+        return "Visitor not found";
+    }
+
+    Visitor visitor = optionalVisitor.get();
+
+    boolean verified = smsService.verifyOtp(visitor.getPhone(), otp);
+
+    if (verified) {
+
+        visitor.setPassExpiry(LocalDateTime.now().plusHours(8));
+        visitorRepository.save(visitor);
+
+        String qrData = "EMAIL=" + visitor.getEmail() + "|ID=" + visitor.getIdNumber();
+
+        return qrService.generateQr(qrData, email);
+    }
+
+    return "Invalid OTP";
+}
 }
