@@ -2,6 +2,8 @@ package com.example.visitor.service;
 import com.example.visitor.dto.ReportDTO;
 import com.example.visitor.entity.Blacklist;
 import com.example.visitor.entity.Visitor;
+import com.example.visitor.entity.OtpVerification;
+
 import com.example.visitor.repository.BlacklistRepository;
 import com.example.visitor.repository.OtpRepository;
 import com.example.visitor.repository.VisitorRepository;
@@ -30,7 +32,7 @@ public class VisitorService {
     @Autowired
     private QrService qrService;
     @Autowired
-    private SmsService smsService;
+    private EmailService emailService;
     @Autowired
     private ReceptionQueueRepository receptionQueueRepository; 
    
@@ -49,21 +51,22 @@ public class VisitorService {
         if (existing.isPresent()){
             return "Visitor already exists";
         }
-//        String otp = otpservice.generateOtp();
-//        OtpVerification otpData = new OtpVerification();
-//
-//        otpData.setEmail(visitor.getEmail());
-//        otpData.setOtp(otp);
-        visitor.setPassExpiry(LocalDateTime.now().plusHours(8));
+        String otp = otpservice.generateOtp();
+        OtpVerification otpData = new OtpVerification();
 
-//        otpRepository.save(otpData);
-        String phone = visitor.getPhone();
+        otpData.setEmail(visitor.getEmail());
+       otpData.setOtp(otp);
+        visitor.setPassExpiry(LocalDateTime.now().plusHours(8));
+//     otpRepository.deleteByEmail(visitor.getEmail()); 
+       otpRepository.save(otpData);
+   
+     String phone = visitor.getPhone();
         if (!phone.startsWith("+91")){
             phone = "+91" + phone;
         }
         visitor.setPhone(phone);
         pendingVisitors.put(visitor.getEmail(),visitor);
-        smsService.sendOtp(visitor.getPhone());
+        emailService.sendOtp(visitor.getEmail(),otp);
 
         return "Otp sent successfully";
     }
@@ -84,13 +87,12 @@ public class VisitorService {
     visitor = optionalVisitor.get();
     }
 
-        boolean verified =
-                smsService.verifyOtp(
-                        visitor.getPhone(),
-                        otp
-                );
+         Optional<OtpVerification> otpData = otpRepository.findByEmailAndOtp(email,otp);
 
-        if (verified) {
+         if (otpData.isEmpty()) {
+        return "Invalid OTP";
+     }
+        if (otpData.isPresent() ) {
 
             visitor.setPassExpiry(
                     LocalDateTime.now().plusHours(8)
@@ -152,9 +154,17 @@ receptionQueueRepository.save(queue);
 
     Visitor visitor = optionalVisitor.get();
 
-    smsService.sendOtp(visitor.getPhone());
+            String otp = otpservice.generateOtp();
 
-    return "OTP sent successfully";
+           OtpVerification otpData = new OtpVerification();
+           otpData.setEmail(email);
+          otpData. setOtp(otp);
+//     otpRepository.deleteByEmail(email);
+           otpRepository.save(otpData);
+
+                emailService.sendOtp(email, otp);
+
+           return "OTP sent successfully";
 }
 
 public String verifyLoginOtp(String email, String otp) {
@@ -167,18 +177,20 @@ public String verifyLoginOtp(String email, String otp) {
 
     Visitor visitor = optionalVisitor.get();
 
-    boolean verified = smsService.verifyOtp(visitor.getPhone(), otp);
+     Optional<OtpVerification> otpData =
+        otpRepository.findByEmailAndOtp(email, otp);
 
-    if (verified) {
+if (otpData.isEmpty()) {
+    return "Invalid OTP";
+}
 
+    
         visitor.setPassExpiry(LocalDateTime.now().plusHours(8));
         visitorRepository.save(visitor);
 
         String qrData = "EMAIL=" + visitor.getEmail() + "|ID=" + visitor.getIdNumber();
 
         return qrService.generateQr(qrData, email);
-    }
-
-    return "Invalid OTP";
+   
 }
 }
