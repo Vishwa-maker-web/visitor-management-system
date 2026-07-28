@@ -111,4 +111,15 @@ public class ReceptionService {
                 + "Room : " + room.getRoomName() + "\n"
                 + "NFC Tag : NFC-" + room.getRoomName();
     }
+
+public String deleteReception(String email) {
+
+    ReceptionQueue queue = receptionQueueRepository
+            .findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Visitor not found"));
+
+    receptionQueueRepository.delete(queue);
+
+    return "Reception entry deleted";
+}
 }

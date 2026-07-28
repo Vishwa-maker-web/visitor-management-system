@@ -34,4 +34,9 @@ public class ReceptionController {
     public String assignRoom(@RequestParam String email) {
         return receptionService.assignRoom(email);
     }
+    
+         @DeleteMapping("/delete")
+public String deleteReception(@RequestParam String email) {
+    return receptionService.deleteReception(email);
+}
 }
