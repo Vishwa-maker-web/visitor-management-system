@@ -102,14 +102,14 @@ public class VisitorService {
             visitorRepository.save(visitor);
            
            
-        ReceptionQueue queue = new ReceptionQueue();
+//        ReceptionQueue queue = new ReceptionQueue();
       
-     queue.setEmail(visitor.getEmail());
-    queue.setName(visitor.getName());
-    queue.setPurpose(visitor.getPurpose());
-    queue.setStatus("WAITING");
+  //   queue.setEmail(visitor.getEmail());
+    //queue.setName(visitor.getName());
+   // queue.setPurpose(visitor.getPurpose());
+   // queue.setStatus("WAITING");
 
-receptionQueueRepository.save(queue);
+//receptionQueueRepository.save(queue);
 
             pendingVisitors.remove(email);
 
