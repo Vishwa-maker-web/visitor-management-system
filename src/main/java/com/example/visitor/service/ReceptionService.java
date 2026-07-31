@@ -1,7 +1,8 @@
 package com.example.visitor.service;
-
+import com.example.visitor.repository.GateEntryRepository;
 import com.example.visitor.entity.MeetingAssignment;
 import com.example.visitor.entity.MeetingRoom;
+import com.example.visitor.entity.GateEntry;
 import com.example.visitor.entity.ReceptionQueue;
 import com.example.visitor.repository.MeetingAssignmentRepository;
 import com.example.visitor.repository.MeetingRoomRepository;
@@ -25,15 +26,18 @@ public class ReceptionService {
 
     @Autowired
     private NotificationService notificationService;
+ 
+    @Autowired
+    private GateEntryRepository gateEntryRepository;
 
     public List<ReceptionQueue> getWaitingVisitors() {
         return receptionQueueRepository.findAll();
     }
 
-    public String verifyAndNotifyHost(String email) {
+  public String verifyAndNotifyHost(String email) {
 
         ReceptionQueue visitor = receptionQueueRepository
-                .findByEmail(email)
+                .findTopByEmailOrderByIdDesc(email)
                 .orElseThrow(() ->
                         new RuntimeException("Visitor not found"));
 
@@ -55,71 +59,31 @@ public class ReceptionService {
 
         return "Host notified. Waiting for confirmation";
     }
+    public String deleteReception(String email) {
 
-    public String hostConfirm(String email) {
+        ReceptionQueue queue = receptionQueueRepository
+                .findTopByEmailOrderByIdDesc(email)
+                .orElseThrow(() -> new RuntimeException("Visitor not found"));
 
-        ReceptionQueue visitor = receptionQueueRepository
-                .findByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("Visitor not found"));
+        MeetingAssignment meeting = meetingAssignmentRepository
+                .findTopByEmailOrderByIdDesc(email)
+                .orElseThrow(() -> new RuntimeException("Meeting not found"));
 
-        if (!visitor.getStatus().equals("HOST_PENDING")) {
-            return "Host notification not sent";
+        if (!meeting.getStatus().equals("COMPLETED")) {
+            return "Meeting not completed by host";
         }
 
-        visitor.setStatus("HOST_APPROVED");
-        receptionQueueRepository.save(visitor);
+        MeetingRoom room = meetingRoomRepository
+                .findByRoomName(meeting.getRoom())
+                .orElseThrow(() -> new RuntimeException("Room not found"));
 
-        return "Host confirmed visitor";
-    }
-
-    public String assignRoom(String email) {
-
-        ReceptionQueue visitor = receptionQueueRepository
-                .findByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("Visitor not found"));
-
-        if (!visitor.getStatus().equals("HOST_APPROVED")) {
-            return "Host confirmation required";
-        }
-
-        List<MeetingRoom> rooms =
-                meetingRoomRepository.findByStatus("AVAILABLE");
-
-        if (rooms.isEmpty()) {
-            return "No Meeting Rooms Available";
-        }
-
-        MeetingRoom room = rooms.get(0);
-
-        room.setStatus("OCCUPIED");
+        room.setStatus("AVAILABLE");
         meetingRoomRepository.save(room);
-
-        MeetingAssignment meeting = new MeetingAssignment();
-        meeting.setEmail(email);
-        meeting.setRoom(room.getRoomName());
-        meeting.setNfcTag("NFC-" + room.getRoomName());
-        meeting.setStatus("Assigned");
-
-        meetingAssignmentRepository.save(meeting);
-
-        visitor.setStatus("ROOM_ASSIGNED");
-        receptionQueueRepository.save(visitor);
-
-        return "Meeting Room Assigned\n"
-                + "Room : " + room.getRoomName() + "\n"
-                + "NFC Tag : NFC-" + room.getRoomName();
+               GateEntry gateEntry = gateEntryRepository.findTopByEmailOrderByIdDesc(email)
+                        .orElseThrow(()-> new RuntimeException("Gate entry not found"));
+        gateEntryRepository.delete(gateEntry);
+        receptionQueueRepository.delete(queue);
+  
+        return "Reception entry deleted and room released";
     }
-
-public String deleteReception(String email) {
-
-    ReceptionQueue queue = receptionQueueRepository
-            .findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Visitor not found"));
-
-    receptionQueueRepository.delete(queue);
-
-    return "Reception entry deleted";
-}
 }

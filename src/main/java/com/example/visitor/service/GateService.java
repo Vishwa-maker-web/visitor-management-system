@@ -1,5 +1,6 @@
 package com.example.visitor.service;
-
+import com.example.visitor.entity.Blacklist;
+import com.example.visitor.repository.BlacklistRepository;
 import com.example.visitor.entity.GateEntry;
 import com.example.visitor.entity.ReceptionQueue;
 import com.example.visitor.entity.Visitor;
@@ -10,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class GateService {
@@ -22,6 +23,8 @@ private GateEntryRepository gateEntryRepository;
 private ReceptionQueueRepository receptionQueueRepository;
     @Autowired
     AuditLogService auditLogService;
+    @Autowired
+private BlacklistRepository blacklistRepository;
 
     public String scanQr(String email, String idNumber){
 
@@ -36,6 +39,17 @@ private ReceptionQueueRepository receptionQueueRepository;
         if (!v.getIdNumber().equals(idNumber)){
             return "invalid id";
         }
+   Optional<Blacklist> blacklisted = blacklistRepository.findByEmailOrPhone(v.getEmail(), v.getPhone());
+        if (blacklisted.isPresent()){
+            return "visitor blacklisted";
+       }
+
+        Optional<GateEntry> existingEntry = gateEntryRepository.findTopByEmailOrderByIdDesc(email);
+
+        if (existingEntry.isPresent()) {
+            return "Visitor already entered";
+        }
+
         GateEntry entry = new GateEntry();
         entry.setEmail(email);
         entry.setGateInTime(LocalDateTime.now());

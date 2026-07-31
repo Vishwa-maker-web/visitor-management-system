@@ -25,7 +25,7 @@ public class IndoorRouteService {
     public String getRoute(String email) {
 
         MeetingAssignment meeting =
-                meetingAssignmentRepository.findFirstByEmail(email)
+                meetingAssignmentRepository.findTopByEmailOrderByIdDesc(email)
                         .orElseThrow(() -> new RuntimeException("Meeting not found"));
 
         IndoorRoute route =

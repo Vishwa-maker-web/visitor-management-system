@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GateEntryRepository extends JpaRepository<GateEntry,Long> {
-  Optional<GateEntry> findTopByEmailOrderByIdDesc(String email);
+  Optional<GateEntry> findTopbyEmailOrderByIdDesc(String email);
 
 }

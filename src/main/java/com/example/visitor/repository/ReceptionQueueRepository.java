@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface ReceptionQueueRepository extends JpaRepository<ReceptionQueue,Long> {
 
     List<ReceptionQueue> findByStatus(String status);
-    Optional<ReceptionQueue> findByEmail(String email);
+    Optional<ReceptionQueue> findTopByEmailOrderByIdDesc(String email);
 }

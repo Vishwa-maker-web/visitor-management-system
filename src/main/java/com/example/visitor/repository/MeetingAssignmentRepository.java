@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface MeetingAssignmentRepository  extends JpaRepository<MeetingAssignment,Long> {
   List<MeetingAssignment> findByEmail(String email);
-  Optional<MeetingAssignment> findFirstByEmail(String email);
+  Optional<MeetingAssignment> findTopByEmailOrderByIdDesc(String email);
 }

@@ -25,15 +25,6 @@ public class ReceptionController {
         return receptionService.verifyAndNotifyHost(email);
     }
 
-    @PostMapping("/host-confirm")
-    public String hostConfirm(@RequestParam String email) {
-        return receptionService.hostConfirm(email);
-    }
-
-    @PostMapping("/assign-room")
-    public String assignRoom(@RequestParam String email) {
-        return receptionService.assignRoom(email);
-    }
     
          @DeleteMapping("/delete")
 public String deleteReception(@RequestParam String email) {
