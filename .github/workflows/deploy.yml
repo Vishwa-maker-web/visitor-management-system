@@ -28,7 +28,7 @@ jobs:
             docker build -t ubuntu-backend .
 
             docker run -d \
-              -restart unless-stopped\
+              --restart unless-stopped\
               --name ubuntu-backend \
               -p 4040:4040 \
               ubuntu-backend
