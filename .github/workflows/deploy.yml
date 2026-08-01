@@ -22,8 +22,8 @@ jobs:
 
             git pull origin main
 
-            docker stop ubuntu-backend || true
-            docker rm ubuntu-backend || true
+            docker stop ubuntu-backend-1|| true
+            docker rm ubuntu-backend-1 || true
 
             docker build -t ubuntu-backend .
 
