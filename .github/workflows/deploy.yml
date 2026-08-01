@@ -22,9 +22,6 @@ jobs:
 
             git pull origin main
 
-            docker rm -f ubuntu-backend|| true
-            docker rm -f ubuntu-backend-1 || true
-
             docker build -t ubuntu-backend .
 
             docker run -d \
