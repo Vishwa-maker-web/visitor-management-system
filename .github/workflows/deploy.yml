@@ -1,1 +1,33 @@
+name: Backend CI/CD
 
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+
+          script: |
+            cd ~/visitor-management-system
+
+            git pull origin main
+
+            docker stop ubuntu-backend || true
+            docker rm ubuntu-backend || true
+
+            docker build -t ubuntu-backend .
+
+            docker run -d \
+              --name ubuntu-backend \
+              -p 4040:4040 \
+              ubuntu-backend
