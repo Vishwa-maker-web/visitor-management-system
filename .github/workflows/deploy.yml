@@ -27,5 +27,5 @@ jobs:
             docker run -d \
               --restart unless-stopped\
               --name ubuntu-backend \
-              -p 4040:4040 \
+              -p 4200:4200 \
               ubuntu-backend

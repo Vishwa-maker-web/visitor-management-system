@@ -4,5 +4,5 @@ RUN mkdir -p /app/qr
 COPY . .
 RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
-EXPOSE 4040
+EXPOSE 4200
 CMD ["java", "-jar", "target/visitor-0.0.1-SNAPSHOT.jar"]

@@ -20,7 +20,7 @@ public class QrService {
             String filePath = "/app/qr/" + safeEmail + ".png";
             Path path = Paths.get(filePath);
             MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
-            return "http://13.206.110.245:4040/qr/"+safeEmail+".png" ;
+            return "http://13.206.110.245:4200/qr/"+safeEmail+".png" ;
         } catch (Exception e) {
             e.printStackTrace();
             return "QR Generation Failed";
